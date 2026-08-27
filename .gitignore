@@ -1,0 +1,4 @@
+bin/
+obj/
+transactions.json
+.DS_Store
