@@ -5,30 +5,43 @@ public class ExpenseTracker
     private FileManager fileManager =
         new FileManager("transactions.json");
 
-    public void AddTransaction(Transaction transaction)
-    {
-        transactions.Add(transaction);
-    }
+   public void AddTransaction(Transaction transaction)
+{
+    transactions.Add(transaction);
+
+    fileManager.Save(transactions);
+}
 
     public void ViewTransactions()
     {
+        Console.WriteLine("===============================================");
+        Console.WriteLine("             TRANSACTION HISTORY");
+        Console.WriteLine("===============================================");
+        Console.WriteLine();
+
         if (transactions.Count == 0)
         {
             Console.WriteLine("No transactions recorded.");
             return;
         }
 
-        Console.WriteLine("\n--- Transaction History ---");
+        int number = 1;
 
         foreach (Transaction transaction in transactions)
         {
+            Console.WriteLine($"Transaction #{number}");
+            Console.WriteLine("-----------------------------------------------");
+            Console.WriteLine($"Type        : {transaction.Type}");
+            Console.WriteLine($"Amount      : LKR {transaction.Amount:N2}");
+            Console.WriteLine($"Category    : {transaction.Category}");
+            Console.WriteLine($"Description : {transaction.Description}");
             Console.WriteLine(
-                $"{transaction.Date:yyyy-MM-dd} | " +
-                $"{transaction.Type} | " +
-                $"{transaction.Category} | " +
-                $"LKR {transaction.Amount:F2} | " +
-                $"{transaction.Description}"
+                $"Date        : {transaction.Date:dd MMM yyyy - h:mm tt}"
             );
+            Console.WriteLine("-----------------------------------------------");
+            Console.WriteLine();
+
+            number++;
         }
     }
 
@@ -54,7 +67,10 @@ public class ExpenseTracker
     public void SaveData()
     {
         fileManager.Save(transactions);
-        Console.WriteLine("Transaction data saved successfully.");
+
+        Console.WriteLine(
+            "Transaction data saved successfully."
+        );
     }
 
     public void LoadData()

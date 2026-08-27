@@ -7,62 +7,142 @@ bool running = true;
 
 while (running)
 {
-    Console.WriteLine("\n==============================");
-    Console.WriteLine("   PERSONAL EXPENSE TRACKER");
-    Console.WriteLine("==============================");
-    Console.WriteLine("1. Add Income");
-    Console.WriteLine("2. Add Expense");
-    Console.WriteLine("3. View Transactions");
-    Console.WriteLine("4. View Balance");
-    Console.WriteLine("5. Save Data");
-    Console.WriteLine("6. Exit");
+    Console.Clear();
 
-    Console.Write("\nSelect an option: ");
+    ShowMainMenu(tracker);
+
+    Console.Write("Select an option: ");
     string? choice = Console.ReadLine();
 
     switch (choice)
     {
         case "1":
-            AddTransaction(tracker, TransactionType.Income);
+            Console.Clear();
+            ShowSectionTitle("ADD INCOME");
+
+            AddTransaction(
+                tracker,
+                TransactionType.Income
+            );
+
+            Pause();
             break;
 
         case "2":
-            AddTransaction(tracker, TransactionType.Expense);
+            Console.Clear();
+            ShowSectionTitle("ADD EXPENSE");
+
+            AddTransaction(
+                tracker,
+                TransactionType.Expense
+            );
+
+            Pause();
             break;
 
         case "3":
+            Console.Clear();
+
             tracker.ViewTransactions();
+
+            Pause();
             break;
 
         case "4":
-            Console.WriteLine("\n--- Financial Summary ---");
-            Console.WriteLine(
-                $"Total Income   : LKR {tracker.GetTotalIncome():F2}"
-            );
-            Console.WriteLine(
-                $"Total Expenses : LKR {tracker.GetTotalExpenses():F2}"
-            );
-            Console.WriteLine(
-                $"Current Balance: LKR {tracker.GetBalance():F2}"
-            );
+            Console.Clear();
+
+            ShowFinancialSummary(tracker);
+
+            Pause();
             break;
 
         case "5":
+            Console.Clear();
+
             tracker.SaveData();
+
+            Pause();
             break;
 
         case "6":
             tracker.SaveData();
+
+            Console.WriteLine();
+            Console.WriteLine("Thank you for using Personal Expense Tracker.");
             Console.WriteLine("Goodbye!");
+
             running = false;
             break;
 
         default:
+            Console.WriteLine();
             Console.WriteLine(
-                "Invalid option. Please select a number from 1 to 6."
+                "Invalid selection. Please enter a number from 1 to 6."
             );
+
+            Pause();
             break;
     }
+}
+
+
+static void ShowMainMenu(ExpenseTracker tracker)
+{
+    Console.WriteLine("===============================================");
+    Console.WriteLine("           PERSONAL EXPENSE TRACKER");
+    Console.WriteLine("===============================================");
+    Console.WriteLine();
+
+    Console.WriteLine(
+        $"Current Balance: LKR {tracker.GetBalance():N2}"
+    );
+
+    Console.WriteLine();
+    Console.WriteLine("-----------------------------------------------");
+    Console.WriteLine();
+
+    Console.WriteLine("1. Add Income");
+    Console.WriteLine("2. Add Expense");
+    Console.WriteLine("3. View Transactions");
+    Console.WriteLine("4. View Financial Summary");
+    Console.WriteLine("5. Save Data");
+    Console.WriteLine("6. Exit");
+
+    Console.WriteLine();
+    Console.WriteLine("-----------------------------------------------");
+    Console.WriteLine();
+}
+
+
+static void ShowSectionTitle(string title)
+{
+    Console.WriteLine("===============================================");
+    Console.WriteLine($"               {title}");
+    Console.WriteLine("===============================================");
+    Console.WriteLine();
+}
+
+
+static void ShowFinancialSummary(ExpenseTracker tracker)
+{
+    Console.WriteLine("===============================================");
+    Console.WriteLine("              FINANCIAL SUMMARY");
+    Console.WriteLine("===============================================");
+    Console.WriteLine();
+
+    Console.WriteLine(
+        $"Total Income    : LKR {tracker.GetTotalIncome():N2}"
+    );
+
+    Console.WriteLine(
+        $"Total Expenses  : LKR {tracker.GetTotalExpenses():N2}"
+    );
+
+    Console.WriteLine("-----------------------------------------------");
+
+    Console.WriteLine(
+        $"Current Balance : LKR {tracker.GetBalance():N2}"
+    );
 }
 
 
@@ -74,7 +154,7 @@ static void AddTransaction(
 
     while (true)
     {
-        Console.Write("\nEnter amount: LKR ");
+        Console.Write("Enter amount: LKR ");
 
         string? amountInput = Console.ReadLine();
 
@@ -83,9 +163,11 @@ static void AddTransaction(
             break;
         }
 
+        Console.WriteLine();
         Console.WriteLine(
             "Invalid amount. Please enter a number greater than 0."
         );
+        Console.WriteLine();
     }
 
     string category = SelectCategory(type);
@@ -104,8 +186,9 @@ static void AddTransaction(
 
     tracker.AddTransaction(transaction);
 
+    Console.WriteLine();
     Console.WriteLine(
-        $"{type} transaction added successfully."
+        $"{type} transaction added successfully and saved automatically!"
     );
 }
 
@@ -116,13 +199,16 @@ static string SelectCategory(TransactionType type)
     {
         while (true)
         {
-            Console.WriteLine("\nSelect Income Category:");
+            Console.WriteLine();
+            Console.WriteLine("Select Income Category:");
+            Console.WriteLine();
             Console.WriteLine("1. Salary");
             Console.WriteLine("2. Freelance");
             Console.WriteLine("3. Business");
             Console.WriteLine("4. Rental");
             Console.WriteLine("5. Gift");
             Console.WriteLine("6. Other");
+            Console.WriteLine();
 
             Console.Write("Select category: ");
             string? choice = Console.ReadLine();
@@ -150,6 +236,7 @@ static string SelectCategory(TransactionType type)
                     );
 
                 default:
+                    Console.WriteLine();
                     Console.WriteLine(
                         "Invalid category. Please select 1 to 6."
                     );
@@ -161,7 +248,9 @@ static string SelectCategory(TransactionType type)
     {
         while (true)
         {
-            Console.WriteLine("\nSelect Expense Category:");
+            Console.WriteLine();
+            Console.WriteLine("Select Expense Category:");
+            Console.WriteLine();
             Console.WriteLine("1. Food");
             Console.WriteLine("2. Transport");
             Console.WriteLine("3. Bills");
@@ -169,6 +258,7 @@ static string SelectCategory(TransactionType type)
             Console.WriteLine("5. Entertainment");
             Console.WriteLine("6. Education");
             Console.WriteLine("7. Other");
+            Console.WriteLine();
 
             Console.Write("Select category: ");
             string? choice = Console.ReadLine();
@@ -199,6 +289,7 @@ static string SelectCategory(TransactionType type)
                     );
 
                 default:
+                    Console.WriteLine();
                     Console.WriteLine(
                         "Invalid category. Please select 1 to 7."
                     );
@@ -222,8 +313,19 @@ static string GetRequiredInput(string message)
             return input.Trim();
         }
 
+        Console.WriteLine();
         Console.WriteLine(
             "This field cannot be empty. Please enter a value."
         );
+        Console.WriteLine();
     }
+}
+
+
+static void Pause()
+{
+    Console.WriteLine();
+    Console.WriteLine("-----------------------------------------------");
+    Console.WriteLine("Press Enter to return to the main menu...");
+    Console.ReadLine();
 }
