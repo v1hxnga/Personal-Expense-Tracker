@@ -9,6 +9,9 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0" />
 
+    <meta name="description"
+          content="Personal Expense Tracker built with C# and ASP.NET Core." />
+
     <title>
         @ViewData["Title"] - Personal Expense Tracker
     </title>
@@ -29,7 +32,9 @@
             <a class="brand"
                asp-page="/Index">
 
-                <span class="brand-icon">$</span>
+                <span class="brand-icon">
+                    $
+                </span>
 
                 <span>
                     Personal Expense Tracker
@@ -43,7 +48,7 @@
                 <span class="status-dot"></span>
 
                 <span>
-                    Web Application
+                    ASP.NET Core Web Application
                 </span>
 
             </div>
@@ -73,6 +78,11 @@
         </div>
 
     </footer>
+
+
+    <script src="~/js/site.js"
+            asp-append-version="true">
+    </script>
 
 
     @await RenderSectionAsync(

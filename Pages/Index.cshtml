@@ -1,4 +1,5 @@
 ﻿@page
+@using Personal_Expense_Tracker.Models
 @model Personal_Expense_Tracker.Pages.IndexModel
 
 @{
@@ -7,165 +8,777 @@
 
 <div class="dashboard-container">
 
-    <!-- Header -->
-    <div class="dashboard-header">
+    <!-- PAGE HEADER -->
+    <section class="dashboard-header">
+
         <div>
-            <h1>Personal Expense Tracker</h1>
-            <p>Manage your income, expenses and personal finances.</p>
+            <span class="eyebrow">
+                PERSONAL FINANCE DASHBOARD
+            </span>
+
+            <h1>
+                Personal Expense Tracker
+            </h1>
+
+            <p>
+                Track income, expenses and spending activity in one place.
+            </p>
         </div>
 
         <div class="header-badge">
             C# / ASP.NET Core
         </div>
-    </div>
+
+    </section>
 
 
-    <!-- Messages -->
+    <!-- SUCCESS MESSAGE -->
     @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
     {
         <div class="message success-message">
+            <strong>Success:</strong>
             @Model.SuccessMessage
         </div>
     }
 
+
+    <!-- ERROR MESSAGE -->
     @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
     {
         <div class="message error-message">
+            <strong>Error:</strong>
             @Model.ErrorMessage
         </div>
     }
 
 
-    <!-- Summary Cards -->
-    <div class="summary-grid">
+    <!-- VALIDATION MESSAGES -->
+    @if (Model.ValidationMessages.Count > 0)
+    {
+        <div class="message error-message">
 
-        <div class="summary-card">
+            <strong>
+                Please correct the following:
+            </strong>
+
+            <ul class="validation-list">
+
+                @foreach (string message in Model.ValidationMessages)
+                {
+                    <li>
+                        @message
+                    </li>
+                }
+
+            </ul>
+
+        </div>
+    }
+
+
+    <!-- MAIN SUMMARY CARDS -->
+    <section class="summary-grid">
+
+        <article class="summary-card">
+
             <span class="summary-label">
                 Current Balance
             </span>
 
-            <span class="summary-value balance-value">
-                LKR @Model.Balance.ToString("N2")
+            <strong class="summary-value balance-value">
+                LKR @Model.Statistics.Balance.ToString("N2")
+            </strong>
+
+            <span class="summary-note">
+                Income minus expenses
             </span>
-        </div>
+
+        </article>
 
 
-        <div class="summary-card">
+        <article class="summary-card">
+
             <span class="summary-label">
                 Total Income
             </span>
 
-            <span class="summary-value income-value">
-                LKR @Model.TotalIncome.ToString("N2")
+            <strong class="summary-value income-value">
+                LKR @Model.Statistics.TotalIncome.ToString("N2")
+            </strong>
+
+            <span class="summary-note">
+                All recorded income
             </span>
-        </div>
+
+        </article>
 
 
-        <div class="summary-card">
+        <article class="summary-card">
+
             <span class="summary-label">
                 Total Expenses
             </span>
 
-            <span class="summary-value expense-value">
-                LKR @Model.TotalExpenses.ToString("N2")
+            <strong class="summary-value expense-value">
+                LKR @Model.Statistics.TotalExpenses.ToString("N2")
+            </strong>
+
+            <span class="summary-note">
+                All recorded expenses
             </span>
-        </div>
 
-    </div>
+        </article>
 
 
-    <!-- Add Transaction -->
-    <div class="content-card">
+        <article class="summary-card">
+
+            <span class="summary-label">
+                Transactions
+            </span>
+
+            <strong class="summary-value">
+                @Model.Statistics.TotalTransactions
+            </strong>
+
+            <span class="summary-note">
+                Across @Model.Statistics.TotalCategories categories
+            </span>
+
+        </article>
+
+    </section>
+
+
+    <!-- SECONDARY STATISTICS -->
+    <section class="quick-stats">
+
+        <article class="quick-stat">
+
+            <span>
+                This Month Income
+            </span>
+
+            <strong class="income-value">
+                LKR @Model.Statistics.ThisMonthIncome.ToString("N2")
+            </strong>
+
+        </article>
+
+
+        <article class="quick-stat">
+
+            <span>
+                This Month Expenses
+            </span>
+
+            <strong class="expense-value">
+                LKR @Model.Statistics.ThisMonthExpenses.ToString("N2")
+            </strong>
+
+        </article>
+
+
+        <article class="quick-stat">
+
+            <span>
+                This Month Net
+            </span>
+
+            <strong class="@(Model.Statistics.ThisMonthNet >= 0 ? "income-value" : "expense-value")">
+                LKR @Model.Statistics.ThisMonthNet.ToString("N2")
+            </strong>
+
+        </article>
+
+
+        <article class="quick-stat">
+
+            <span>
+                Largest Expense
+            </span>
+
+            <strong>
+                LKR @Model.Statistics.LargestExpense.ToString("N2")
+            </strong>
+
+        </article>
+
+
+        <article class="quick-stat">
+
+            <span>
+                Average Expense
+            </span>
+
+            <strong>
+                LKR @Model.Statistics.AverageExpense.ToString("N2")
+            </strong>
+
+        </article>
+
+    </section>
+
+
+    <!-- ADD TRANSACTION -->
+    <section class="content-card">
 
         <div class="section-heading">
+
             <div>
-                <h2>Add Transaction</h2>
-                <p>Record a new income or expense transaction.</p>
+
+                <h2>
+                    Add Transaction
+                </h2>
+
+                <p>
+                    Record a new income or expense transaction.
+                </p>
+
             </div>
+
         </div>
 
 
-        <form method="post">
+        <form method="post"
+              asp-page-handler="Add"
+              class="transaction-form">
 
-            <div class="form-grid">
+            <div class="form-grid three-column-grid">
 
+                <!-- TYPE -->
                 <div class="form-group">
+
+                    <label asp-for="AddType">
+                        Transaction Type
+                    </label>
+
+                    <select asp-for="AddType"
+                            id="addType"
+                            class="input-control">
+
+                        <option value="Income">
+                            Income
+                        </option>
+
+                        <option value="Expense">
+                            Expense
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DATE -->
+                <div class="form-group">
+
+                    <label asp-for="TransactionDate">
+                        Date
+                    </label>
+
+                    <input asp-for="TransactionDate"
+                           type="date"
+                           max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                           class="input-control"
+                           required />
+
+                </div>
+
+
+                <!-- AMOUNT -->
+                <div class="form-group">
+
                     <label asp-for="Amount">
                         Amount
                     </label>
 
                     <div class="amount-input">
-                        <span>LKR</span>
+
+                        <span>
+                            LKR
+                        </span>
 
                         <input asp-for="Amount"
                                type="number"
-                               step="0.01"
                                min="0.01"
-                               placeholder="Enter amount" />
+                               step="0.01"
+                               placeholder="Enter amount"
+                               required />
+
                     </div>
-                </div>
 
-
-                <div class="form-group">
-                    <label asp-for="Category">
-                        Category
-                    </label>
-
-                    <input asp-for="Category"
-                           type="text"
-                           placeholder="e.g. Salary, Food, Transport" />
                 </div>
 
             </div>
 
 
+            <div class="form-grid">
+
+                <!-- CATEGORY -->
+                <div class="form-group">
+
+                    <label asp-for="CategoryChoice">
+                        Category
+                    </label>
+
+                    <select asp-for="CategoryChoice"
+                            id="addCategory"
+                            class="input-control"
+                            required>
+
+                        <option value="">
+                            Select a category
+                        </option>
+
+
+                        @foreach (string category in Model.IncomeCategories)
+                        {
+                            <option value="@category"
+                                    data-type="Income">
+
+                                @category
+
+                            </option>
+                        }
+
+
+                        @foreach (string category in Model.ExpenseCategories)
+                        {
+                            <option value="@category"
+                                    data-type="Expense">
+
+                                @category
+
+                            </option>
+                        }
+
+
+                        <option value="Other"
+                                data-type="Both">
+
+                            Other
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- CUSTOM CATEGORY -->
+                <div class="form-group is-hidden"
+                     id="addCustomCategoryGroup">
+
+                    <label asp-for="CustomCategory">
+                        Custom Category
+                    </label>
+
+                    <input asp-for="CustomCategory"
+                           id="addCustomCategory"
+                           type="text"
+                           maxlength="50"
+                           placeholder="Enter your own category"
+                           class="input-control" />
+
+                </div>
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
             <div class="form-group description-group">
+
                 <label asp-for="Description">
                     Description
                 </label>
 
                 <input asp-for="Description"
                        type="text"
-                       placeholder="Enter transaction description" />
+                       maxlength="200"
+                       placeholder="Enter transaction description"
+                       class="input-control"
+                       required />
+
             </div>
 
 
-            <div class="transaction-buttons">
+            <button type="submit"
+                    id="addTransactionButton"
+                    class="primary-transaction-button expense-button">
+
+                − Add Expense
+
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- EDIT TRANSACTION -->
+    @if (Model.IsEditing)
+    {
+        <section class="content-card edit-card">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>
+                        Edit Transaction
+                    </h2>
+
+                    <p>
+                        Update the selected transaction.
+                    </p>
+
+                </div>
+
+                <a asp-page="/Index"
+                   class="close-edit-link">
+
+                    Cancel
+
+                </a>
+
+            </div>
+
+
+            <form method="post"
+                  asp-page-handler="Edit">
+
+                <input asp-for="EditId"
+                       type="hidden" />
+
+
+                <div class="form-grid three-column-grid">
+
+                    <div class="form-group">
+
+                        <label asp-for="EditType">
+                            Transaction Type
+                        </label>
+
+                        <select asp-for="EditType"
+                                id="editType"
+                                class="input-control">
+
+                            <option value="Income">
+                                Income
+                            </option>
+
+                            <option value="Expense">
+                                Expense
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label asp-for="EditDate">
+                            Date
+                        </label>
+
+                        <input asp-for="EditDate"
+                               type="date"
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               class="input-control"
+                               required />
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label asp-for="EditAmount">
+                            Amount
+                        </label>
+
+                        <div class="amount-input">
+
+                            <span>
+                                LKR
+                            </span>
+
+                            <input asp-for="EditAmount"
+                                   type="number"
+                                   min="0.01"
+                                   step="0.01"
+                                   class="input-control"
+                                   required />
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label asp-for="EditCategoryChoice">
+                            Category
+                        </label>
+
+                        <select asp-for="EditCategoryChoice"
+                                id="editCategory"
+                                class="input-control"
+                                required>
+
+                            <option value="">
+                                Select a category
+                            </option>
+
+
+                            @foreach (string category in Model.IncomeCategories)
+                            {
+                                <option value="@category"
+                                        data-type="Income">
+
+                                    @category
+
+                                </option>
+                            }
+
+
+                            @foreach (string category in Model.ExpenseCategories)
+                            {
+                                <option value="@category"
+                                        data-type="Expense">
+
+                                    @category
+
+                                </option>
+                            }
+
+
+                            <option value="Other"
+                                    data-type="Both">
+
+                                Other
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group is-hidden"
+                         id="editCustomCategoryGroup">
+
+                        <label asp-for="EditCustomCategory">
+                            Custom Category
+                        </label>
+
+                        <input asp-for="EditCustomCategory"
+                               id="editCustomCategory"
+                               maxlength="50"
+                               type="text"
+                               placeholder="Enter your own category"
+                               class="input-control" />
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group description-group">
+
+                    <label asp-for="EditDescription">
+                        Description
+                    </label>
+
+                    <input asp-for="EditDescription"
+                           type="text"
+                           maxlength="200"
+                           class="input-control"
+                           required />
+
+                </div>
+
+
+                <div class="edit-actions">
+
+                    <button type="submit"
+                            class="save-button">
+
+                        Save Changes
+
+                    </button>
+
+
+                    <a asp-page="/Index"
+                       class="secondary-button">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </section>
+    }
+
+
+    <!-- SEARCH AND FILTERS -->
+    <section class="content-card">
+
+        <div class="section-heading">
+
+            <div>
+
+                <h2>
+                    Search & Filter
+                </h2>
+
+                <p>
+                    Find transactions using text, type, category or month.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form method="get"
+              class="filter-grid">
+
+            <!-- SEARCH -->
+            <div class="form-group search-field">
+
+                <label asp-for="SearchText">
+                    Search
+                </label>
+
+                <input asp-for="SearchText"
+                       type="search"
+                       placeholder="Search category or description..."
+                       class="input-control" />
+
+            </div>
+
+
+            <!-- TYPE -->
+            <div class="form-group">
+
+                <label asp-for="FilterType">
+                    Type
+                </label>
+
+                <select asp-for="FilterType"
+                        class="input-control">
+
+                    <option value="All">
+                        All Types
+                    </option>
+
+                    <option value="Income">
+                        Income
+                    </option>
+
+                    <option value="Expense">
+                        Expense
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- CATEGORY -->
+            <div class="form-group">
+
+                <label asp-for="FilterCategory">
+                    Category
+                </label>
+
+                <select asp-for="FilterCategory"
+                        class="input-control">
+
+                    <option value="All">
+                        All Categories
+                    </option>
+
+
+                    @foreach (string category in Model.AvailableCategories)
+                    {
+                        <option value="@category">
+                            @category
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+
+            <!-- MONTH -->
+            <div class="form-group">
+
+                <label asp-for="FilterMonth">
+                    Month
+                </label>
+
+                <input asp-for="FilterMonth"
+                       type="month"
+                       class="input-control" />
+
+            </div>
+
+
+            <div class="filter-actions">
 
                 <button type="submit"
-                        asp-page-handler="Income"
-                        class="income-button">
+                        class="filter-button">
 
-                    + Add Income
+                    Apply Filters
+
                 </button>
 
 
-                <button type="submit"
-                        asp-page-handler="Expense"
-                        class="expense-button">
+                <a asp-page="/Index"
+                   class="clear-filter-button">
 
-                    − Add Expense
-                </button>
+                    Clear
+
+                </a>
 
             </div>
 
         </form>
 
-    </div>
+    </section>
 
 
-    <!-- Transactions -->
-    <div class="content-card transaction-card">
+    <!-- TRANSACTION HISTORY -->
+    <section class="content-card">
 
         <div class="section-heading">
+
             <div>
-                <h2>Transaction History</h2>
+
+                <h2>
+                    Transaction History
+                </h2>
 
                 <p>
+                    Showing
                     @Model.Transactions.Count
-                    transaction(s) recorded
+                    of
+                    @Model.Statistics.TotalTransactions
+                    transaction(s)
                 </p>
+
             </div>
+
         </div>
 
 
@@ -177,10 +790,12 @@
                     $
                 </div>
 
-                <h3>No transactions yet</h3>
+                <h3>
+                    No transactions found
+                </h3>
 
                 <p>
-                    Add your first income or expense transaction above.
+                    Add a transaction or change your search filters.
                 </p>
 
             </div>
@@ -192,32 +807,52 @@
                 <table class="transaction-table">
 
                     <thead>
+
                         <tr>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Category</th>
-                            <th>Description</th>
-                            <th>Amount</th>
-                            <th></th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Description
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
                         </tr>
+
                     </thead>
 
 
                     <tbody>
 
-                    @foreach (var transaction in Model.Transactions)
+                    @foreach (Transaction transaction in Model.Transactions)
                     {
                         <tr>
 
-                            <td>
+                            <td data-label="Date">
                                 @transaction.Date.ToString("dd MMM yyyy")
                             </td>
 
 
-                            <td>
+                            <td data-label="Type">
 
-                                @if (transaction.Type ==
-                                     Personal_Expense_Tracker.Models.TransactionType.Income)
+                                @if (transaction.Type == TransactionType.Income)
                                 {
                                     <span class="type-badge income-badge">
                                         Income
@@ -233,48 +868,64 @@
                             </td>
 
 
-                            <td>
+                            <td data-label="Category">
                                 @transaction.Category
                             </td>
 
 
-                            <td class="description-cell">
+                            <td data-label="Description"
+                                class="description-cell">
+
                                 @transaction.Description
+
                             </td>
 
 
-                            <td>
+                            <td data-label="Amount">
 
-                                @if (transaction.Type ==
-                                     Personal_Expense_Tracker.Models.TransactionType.Income)
+                                @if (transaction.Type == TransactionType.Income)
                                 {
                                     <span class="transaction-income">
+
                                         + LKR @transaction.Amount.ToString("N2")
+
                                     </span>
                                 }
                                 else
                                 {
                                     <span class="transaction-expense">
-                                        - LKR @transaction.Amount.ToString("N2")
+
+                                        − LKR @transaction.Amount.ToString("N2")
+
                                     </span>
                                 }
 
                             </td>
 
 
-                            <td>
+                            <td data-label="Actions"
+                                class="actions-cell">
+
+                                <a asp-page="/Index"
+                                   asp-route-editId="@transaction.Id"
+                                   class="edit-button">
+
+                                    Edit
+
+                                </a>
+
 
                                 <form method="post"
                                       asp-page-handler="Delete"
-                                      class="delete-form">
+                                      class="delete-form"
+                                      data-confirm="Are you sure you want to permanently delete this transaction?">
 
                                     <input type="hidden"
                                            name="id"
                                            value="@transaction.Id" />
 
                                     <button type="submit"
-                                            class="delete-button"
-                                            title="Delete transaction">
+                                            class="delete-button">
 
                                         Delete
 
@@ -294,6 +945,160 @@
             </div>
         }
 
-    </div>
+    </section>
+
+
+    <!-- ANALYTICS -->
+    <section class="analytics-grid">
+
+        <!-- MONTHLY SUMMARY -->
+        <article class="content-card analytics-card">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>
+                        Monthly Summary
+                    </h2>
+
+                    <p>
+                        Income and expenses for the latest six months.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table class="summary-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Month</th>
+                            <th>Income</th>
+                            <th>Expenses</th>
+                            <th>Net</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    @foreach (MonthlySummary summary in Model.MonthlySummaries)
+                    {
+                        <tr>
+
+                            <td>
+                                @summary.MonthLabel
+                            </td>
+
+                            <td class="income-value">
+                                LKR @summary.Income.ToString("N2")
+                            </td>
+
+                            <td class="expense-value">
+                                LKR @summary.Expenses.ToString("N2")
+                            </td>
+
+                            <td class="@(summary.Net >= 0 ? "income-value" : "expense-value")">
+                                LKR @summary.Net.ToString("N2")
+                            </td>
+
+                        </tr>
+                    }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </article>
+
+
+        <!-- CATEGORY SUMMARY -->
+        <article class="content-card analytics-card">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>
+                        Expense Categories
+                    </h2>
+
+                    <p>
+                        Breakdown of spending by category.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            @if (Model.ExpenseCategorySummaries.Count == 0)
+            {
+                <div class="small-empty-state">
+                    No expense data available yet.
+                </div>
+            }
+            else
+            {
+                <div class="category-summary-list">
+
+                    @foreach (CategorySummary summary in Model.ExpenseCategorySummaries)
+                    {
+                        <div class="category-summary-item">
+
+                            <div class="category-summary-header">
+
+                                <div>
+
+                                    <strong>
+                                        @summary.Category
+                                    </strong>
+
+                                    <span>
+                                        @summary.TransactionCount transaction(s)
+                                    </span>
+
+                                </div>
+
+
+                                <div class="category-total">
+
+                                    LKR @summary.Total.ToString("N2")
+
+                                    <span>
+                                        @summary.Percentage.ToString("0.0")%
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="category-bar">
+
+                                <div class="category-bar-fill"
+                                     style="width:@Model.PercentageWidth(summary.Percentage)">
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+            }
+
+        </article>
+
+    </section>
 
 </div>
