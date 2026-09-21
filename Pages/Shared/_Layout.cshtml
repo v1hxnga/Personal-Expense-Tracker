@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        @ViewData["Title"] - Personal Expense Tracker
+    </title>
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+</head>
+
+
+<body>
+
+    <header class="top-navbar">
+
+        <div class="nav-container">
+
+            <a class="brand"
+               asp-page="/Index">
+
+                <span class="brand-icon">$</span>
+
+                <span>
+                    Personal Expense Tracker
+                </span>
+
+            </a>
+
+
+            <div class="nav-right">
+
+                <span class="status-dot"></span>
+
+                <span>
+                    Web Application
+                </span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <main>
+        @RenderBody()
+    </main>
+
+
+    <footer>
+
+        <div class="footer-container">
+
+            <span>
+                Personal Expense Tracker
+            </span>
+
+            <span>
+                Built with C# and ASP.NET Core
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false
+    )
+
+</body>
+
+</html>

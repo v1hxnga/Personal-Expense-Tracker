@@ -1,0 +1,299 @@
+﻿@page
+@model Personal_Expense_Tracker.Pages.IndexModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-container">
+
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div>
+            <h1>Personal Expense Tracker</h1>
+            <p>Manage your income, expenses and personal finances.</p>
+        </div>
+
+        <div class="header-badge">
+            C# / ASP.NET Core
+        </div>
+    </div>
+
+
+    <!-- Messages -->
+    @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+    {
+        <div class="message success-message">
+            @Model.SuccessMessage
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="message error-message">
+            @Model.ErrorMessage
+        </div>
+    }
+
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+
+        <div class="summary-card">
+            <span class="summary-label">
+                Current Balance
+            </span>
+
+            <span class="summary-value balance-value">
+                LKR @Model.Balance.ToString("N2")
+            </span>
+        </div>
+
+
+        <div class="summary-card">
+            <span class="summary-label">
+                Total Income
+            </span>
+
+            <span class="summary-value income-value">
+                LKR @Model.TotalIncome.ToString("N2")
+            </span>
+        </div>
+
+
+        <div class="summary-card">
+            <span class="summary-label">
+                Total Expenses
+            </span>
+
+            <span class="summary-value expense-value">
+                LKR @Model.TotalExpenses.ToString("N2")
+            </span>
+        </div>
+
+    </div>
+
+
+    <!-- Add Transaction -->
+    <div class="content-card">
+
+        <div class="section-heading">
+            <div>
+                <h2>Add Transaction</h2>
+                <p>Record a new income or expense transaction.</p>
+            </div>
+        </div>
+
+
+        <form method="post">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label asp-for="Amount">
+                        Amount
+                    </label>
+
+                    <div class="amount-input">
+                        <span>LKR</span>
+
+                        <input asp-for="Amount"
+                               type="number"
+                               step="0.01"
+                               min="0.01"
+                               placeholder="Enter amount" />
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label asp-for="Category">
+                        Category
+                    </label>
+
+                    <input asp-for="Category"
+                           type="text"
+                           placeholder="e.g. Salary, Food, Transport" />
+                </div>
+
+            </div>
+
+
+            <div class="form-group description-group">
+                <label asp-for="Description">
+                    Description
+                </label>
+
+                <input asp-for="Description"
+                       type="text"
+                       placeholder="Enter transaction description" />
+            </div>
+
+
+            <div class="transaction-buttons">
+
+                <button type="submit"
+                        asp-page-handler="Income"
+                        class="income-button">
+
+                    + Add Income
+                </button>
+
+
+                <button type="submit"
+                        asp-page-handler="Expense"
+                        class="expense-button">
+
+                    − Add Expense
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- Transactions -->
+    <div class="content-card transaction-card">
+
+        <div class="section-heading">
+            <div>
+                <h2>Transaction History</h2>
+
+                <p>
+                    @Model.Transactions.Count
+                    transaction(s) recorded
+                </p>
+            </div>
+        </div>
+
+
+        @if (Model.Transactions.Count == 0)
+        {
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    $
+                </div>
+
+                <h3>No transactions yet</h3>
+
+                <p>
+                    Add your first income or expense transaction above.
+                </p>
+
+            </div>
+        }
+        else
+        {
+            <div class="table-wrapper">
+
+                <table class="transaction-table">
+
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+
+                    <tbody>
+
+                    @foreach (var transaction in Model.Transactions)
+                    {
+                        <tr>
+
+                            <td>
+                                @transaction.Date.ToString("dd MMM yyyy")
+                            </td>
+
+
+                            <td>
+
+                                @if (transaction.Type ==
+                                     Personal_Expense_Tracker.Models.TransactionType.Income)
+                                {
+                                    <span class="type-badge income-badge">
+                                        Income
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="type-badge expense-badge">
+                                        Expense
+                                    </span>
+                                }
+
+                            </td>
+
+
+                            <td>
+                                @transaction.Category
+                            </td>
+
+
+                            <td class="description-cell">
+                                @transaction.Description
+                            </td>
+
+
+                            <td>
+
+                                @if (transaction.Type ==
+                                     Personal_Expense_Tracker.Models.TransactionType.Income)
+                                {
+                                    <span class="transaction-income">
+                                        + LKR @transaction.Amount.ToString("N2")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="transaction-expense">
+                                        - LKR @transaction.Amount.ToString("N2")
+                                    </span>
+                                }
+
+                            </td>
+
+
+                            <td>
+
+                                <form method="post"
+                                      asp-page-handler="Delete"
+                                      class="delete-form">
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@transaction.Id" />
+
+                                    <button type="submit"
+                                            class="delete-button"
+                                            title="Delete transaction">
+
+                                        Delete
+
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    </div>
+
+</div>
