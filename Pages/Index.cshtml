@@ -12,6 +12,7 @@
     <section class="dashboard-header">
 
         <div>
+
             <span class="eyebrow">
                 PERSONAL FINANCE DASHBOARD
             </span>
@@ -23,8 +24,8 @@
             <p>
                 Track income, expenses and spending activity in one place.
             </p>
-        </div>
 
+        </div>
 
     </section>
 
@@ -33,8 +34,10 @@
     @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
     {
         <div class="message success-message">
+
             <strong>Success:</strong>
             @Model.SuccessMessage
+
         </div>
     }
 
@@ -43,8 +46,10 @@
     @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
     {
         <div class="message error-message">
+
             <strong>Error:</strong>
             @Model.ErrorMessage
+
         </div>
     }
 
@@ -415,7 +420,8 @@
     <!-- EDIT TRANSACTION -->
     @if (Model.IsEditing)
     {
-        <section class="content-card edit-card">
+        <section id="edit-transaction"
+                 class="content-card edit-card">
 
             <div class="section-heading">
 
@@ -430,6 +436,7 @@
                     </p>
 
                 </div>
+
 
                 <a asp-page="/Index"
                    class="close-edit-link">
@@ -905,6 +912,7 @@
 
                                 <a asp-page="/Index"
                                    asp-route-editId="@transaction.Id"
+                                   asp-fragment="edit-transaction"
                                    class="edit-button">
 
                                     Edit
