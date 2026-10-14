@@ -1,0 +1,53 @@
+name: Finalize latest dashboard source
+
+on:
+  push:
+    branches:
+      - web-version
+    paths:
+      - .github/workflows/finalize-index-spacing.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out web-version
+        uses: actions/checkout@v4
+        with:
+          ref: web-version
+          fetch-depth: 0
+
+      - name: Match latest local dashboard spacing
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("Pages/Index.cshtml")
+          data = path.read_bytes()
+          old = (
+              b'            </p>\r\n'
+              b'        </div>\r\n\r\n'
+              b'    </section>\r\n\r\n\r\n'
+              b'    <!-- SUCCESS MESSAGE -->'
+          )
+          new = (
+              b'            </p>\r\n'
+              b'        </div>\r\n\r\n\r\n'
+              b'    </section>\r\n\r\n\r\n'
+              b'    <!-- SUCCESS MESSAGE -->'
+          )
+          if old not in data:
+              raise SystemExit("Expected dashboard spacing was not found")
+          path.write_bytes(data.replace(old, new, 1))
+
+      - name: Remove temporary workflow and commit
+        run: |
+          rm .github/workflows/finalize-index-spacing.yml
+          git config user.name "Vihanga Induwara"
+          git config user.email "vihanga728@gmail.com"
+          git add Pages/Index.cshtml .github/workflows/finalize-index-spacing.yml
+          git commit -m "Match latest local dashboard source exactly"
+          git push origin HEAD:web-version
