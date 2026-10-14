@@ -1,0 +1,40 @@
+name: Normalize latest layout source
+
+on:
+  push:
+    branches:
+      - web-version
+    paths:
+      - .github/workflows/normalize-layout.yml
+
+permissions:
+  contents: write
+
+jobs:
+  normalize-layout:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out web-version
+        uses: actions/checkout@v4
+        with:
+          ref: web-version
+          fetch-depth: 0
+
+      - name: Match local layout line endings
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("Pages/Shared/_Layout.cshtml")
+          data = path.read_bytes()
+          data = data.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+          path.write_bytes(data)
+
+      - name: Remove temporary workflow and commit
+        run: |
+          rm .github/workflows/normalize-layout.yml
+          git config user.name "Vihanga Induwara"
+          git config user.email "vihanga728@gmail.com"
+          git add Pages/Shared/_Layout.cshtml .github/workflows/normalize-layout.yml
+          git commit -m "Match latest local layout source"
+          git push origin HEAD:web-version
